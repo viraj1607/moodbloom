@@ -19,7 +19,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/journal" element={<Journal />} />
         <Route path="/journal/:id" element={<JournalEntry />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        {/* <Route path="/dashboard" element={<Dashboard />} /> */}
         <Route path="/cookiejar" element={<CookiJar />} />
         {/* <Route path="*" element={<NotFound />} /> */}
       </Routes>
