@@ -1,21 +1,31 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { signInWithEmail } from "../services/auth";
+import { UserCredential } from "firebase/auth";
 
 export default function SignIn() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const navigate=useNavigate();
 
   const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const res = await signInWithEmail(email, password);
-      console.log("success signin", res);
+    const res = await signInWithEmail(email, password);
+
+    if (res.success) {
+      const uid = res.user.user.uid;
+      console.log("Success signin", res);
+      localStorage.setItem("token", uid);
+      navigate("/journal")
       setEmail("");
       setPassword("");
-    } catch (err) {
-      console.error("Signup error:", err);
+    } else {
+      console.error("Signin error:", res.error);
     }
+  } catch (err) {
+    console.error("Unexpected error:", err);
+  }
   };
 
   return (
@@ -38,6 +48,7 @@ export default function SignIn() {
               className="w-full px-4 py-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500 dark:text-white"
               placeholder="you@example.com"
               required
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
@@ -50,6 +61,7 @@ export default function SignIn() {
               className="w-full px-4 py-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500 dark:text-white"
               placeholder="••••••••"
               required
+              value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>

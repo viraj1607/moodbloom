@@ -4,6 +4,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
+  UserCredential,
 } from "firebase/auth";
 import { auth } from "../firebasConfig";
 
@@ -32,16 +33,19 @@ export const signUpWithEmail = async (
   }
 };
 
-export const signInWithEmail = async (
+type SignInResponse =
+  | { success: true; user: UserCredential }
+  | { success: false; error: string };
+
+  export const signInWithEmail = async (
   email: string,
   password: string
-) => {
+): Promise<SignInResponse> => {
   try {
     const userSignIn = await signInWithEmailAndPassword(auth, email, password);
-
     return { success: true, user: userSignIn };
   } catch (err: any) {
-    console.error("Sign-up error:", err.message);
+    console.error("Sign-in error:", err.message);
     return { success: false, error: err.message };
   }
 };

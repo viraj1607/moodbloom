@@ -1,12 +1,16 @@
+import { onAuthStateChanged } from "firebase/auth";
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
+import { auth } from "../firebasConfig";
 
 export default function Header() {
   const [darkMode, setDarkMode] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [uid, setUid] = useState<string | null>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem("theme");
+
     if (saved === "dark") {
       setDarkMode(true);
       document.documentElement.classList.add("dark");
@@ -19,6 +23,24 @@ export default function Header() {
         document.documentElement.classList.add("dark");
       }
     }
+  }, []);
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, perform necessary actions
+        const uid = user.uid;
+        console.log("User is signed in with UID:", uid);
+        // const storedUid = localStorage.getItem("token");
+
+        setUid(uid);
+        // Update UI elements or application state
+      } else {
+        // User is signed out
+        console.log("User is signed out");
+        // Redirect to login page or update UI accordingly
+      }
+    });
   }, []);
 
   const toggleDarkMode = () => {
@@ -45,32 +67,34 @@ export default function Header() {
           </NavLink>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex space-x-4 items-center">
-            <NavLink
-              to="/journal"
-              className={({ isActive }) =>
-                `px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
-                  isActive
-                    ? "text-cyan-500 dark:text-cyan-400 font-semibold"
-                    : "text-slate-600 dark:text-slate-400 hover:text-cyan-500 dark:hover:text-cyan-400"
-                }`
-              }
-            >
-              Journal
-            </NavLink>
-            <NavLink
-              to="/cookiejar"
-              className={({ isActive }) =>
-                `px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
-                  isActive
-                    ? "text-cyan-500 dark:text-cyan-400 font-semibold"
-                    : "text-slate-600 dark:text-slate-400 hover:text-cyan-500 dark:hover:text-cyan-400"
-                }`
-              }
-            >
-              Cookie Jar
-            </NavLink>
-          </nav>
+          {uid && (
+            <nav className=" sm:flex space-x-4 items-center hidden">
+              <NavLink
+                to="/journal"
+                className={({ isActive }) =>
+                  `px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                    isActive
+                      ? "text-cyan-500 dark:text-cyan-400 font-semibold"
+                      : "text-slate-600 dark:text-slate-400 hover:text-cyan-500 dark:hover:text-cyan-400"
+                  }`
+                }
+              >
+                Journal
+              </NavLink>
+              <NavLink
+                to="/cookiejar"
+                className={({ isActive }) =>
+                  `px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                    isActive
+                      ? "text-cyan-500 dark:text-cyan-400 font-semibold"
+                      : "text-slate-600 dark:text-slate-400 hover:text-cyan-500 dark:hover:text-cyan-400"
+                  }`
+                }
+              >
+                Cookie Jar
+              </NavLink>
+            </nav>
+          )}
         </div>
 
         {/* Mobile Menu Toggle */}

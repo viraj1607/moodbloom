@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import Footer from "./components/Footer";
 import JournalEntry from "./pages/JournalEntry";
 import CookiJar from "./pages/CookiJar";
+import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
   return (
@@ -17,10 +18,31 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/journal" element={<Journal />} />
-        <Route path="/journal/:id" element={<JournalEntry />} />
+        <Route
+          path="/journal"
+          element={
+            <PrivateRoute>
+              <Journal />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/journal/:id"
+          element={
+            <PrivateRoute>
+              <JournalEntry />
+            </PrivateRoute>
+          }
+        />
         {/* <Route path="/dashboard" element={<Dashboard />} /> */}
-        <Route path="/cookiejar" element={<CookiJar />} />
+        <Route
+          path="/cookiejar"
+          element={
+            <PrivateRoute>
+              <CookiJar />
+            </PrivateRoute>
+          }
+        />
         {/* <Route path="*" element={<NotFound />} /> */}
       </Routes>
       <Footer />
