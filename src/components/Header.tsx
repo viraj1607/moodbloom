@@ -64,6 +64,18 @@ export default function Header() {
             Dashboard
           </NavLink>
           <NavLink
+            to="/cookiejar"
+            className={({ isActive }) =>
+              `px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                isActive
+                  ? "text-cyan-500 dark:text-cyan-400 font-semibold"
+                  : "text-slate-600 dark:text-slate-400 hover:text-cyan-500 dark:hover:text-cyan-400"
+              }`
+            }
+          >
+            Cookie Jar
+          </NavLink>
+          <NavLink
             to="/journal"
             className={({ isActive }) =>
               `px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${

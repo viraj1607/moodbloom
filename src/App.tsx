@@ -7,6 +7,7 @@ import Journal from "./pages/Journal";
 import Dashboard from "./pages/Dashboard";
 import Footer from "./components/Footer";
 import JournalEntry from "./pages/JournalEntry";
+import CookiJar from "./pages/CookiJar";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/journal" element={<Journal />} />
         <Route path="/journal/:id" element={<JournalEntry />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/cookiejar" element={<CookiJar />} />
         {/* <Route path="*" element={<NotFound />} /> */}
       </Routes>
       <Footer />

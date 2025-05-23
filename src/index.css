@@ -1,9 +1,76 @@
-
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 @import 'react-calendar/dist/Calendar.css';
 
 
-button{
+button {
   cursor: pointer;
+}
+
+/* CalendarStyles.css */
+
+/* Calendar base styles */
+.react-calendar {
+  border-radius: 1rem;
+  padding: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Light theme */
+.react-calendar {
+  background-color: rgba(255, 255, 255, 0.8);
+  color: #1e293b;
+}
+
+.react-calendar__tile {
+  background: transparent;
+  color: #334155;
+  border-radius: 0.5rem;
+  padding: 0.75rem 0.25rem;
+}
+
+.react-calendar__tile--now {
+  background: rgba(14, 165, 233, 0.15);
+  color: #0ea5e9;
+  font-weight: bold;
+}
+
+.react-calendar__tile--active {
+  background: rgba(14, 165, 233, 0.2);
+  color: #0284c7;
+}
+
+.react-calendar__tile:hover {
+  background: rgba(14, 165, 233, 0.1);
+  color: #0c4a6e;
+}
+
+/* Dark theme — scoped using .dark parent class */
+.dark .react-calendar {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e0f2f1;
+}
+
+.dark .react-calendar__navigation button {
+  color: #67e8f9;
+}
+
+.dark .react-calendar__tile {
+  color: #cbd5e1;
+}
+
+.dark .react-calendar__tile--now {
+  background: rgba(45, 212, 191, 0.2);
+  color: #5eead4;
+}
+
+.dark .react-calendar__tile--active {
+  background: rgba(14, 165, 233, 0.3);
+  color: #22d3ee;
+}
+
+.dark .react-calendar__tile:hover {
+  background: rgba(14, 165, 233, 0.2);
+  color: #a5f3fc;
 }
