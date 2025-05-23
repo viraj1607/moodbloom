@@ -1,17 +1,22 @@
 import { useState } from "react";
-import Calendar from "react-calendar";
-import { format } from "date-fns";
 import "react-calendar/dist/Calendar.css";
 import { Link } from "react-router-dom";
+import JournalCalenderView from "../components/JournalCalenderView";
+import JournalListView from "../components/JournalListView";
+
+export type JournalEntry = {
+  date: string;
+  content: string;
+};
+
 
 export default function JournalPage() {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [view, setView] = useState("calendar");
 
-  const sampleJournals = [
-    { date: "2025-05-18", mood: "🙂", preview: "Felt calm and focused..." },
-    { date: "2025-05-17", mood: "😟", preview: "Bit overwhelmed today..." },
-    { date: "2025-05-16", mood: "😄", preview: "Amazing productive day..." },
+  const sampleJournals:JournalEntry[] = [
+    { date: "2025-05-18", content: "Felt calm and focused..." },
+    { date: "2025-05-17", content: "Bit overwhelmed today..." },
+    { date: "2025-05-16", content: "Amazing productive day..." },
   ];
 
   return (
@@ -54,40 +59,18 @@ export default function JournalPage() {
         {/* Content */}
         {view === "calendar" ? (
           <div className="bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10 rounded-3xl p-6 shadow-xl backdrop-blur-md">
-            <Calendar
-              onChange={(date) => {
-                if (date instanceof Date) {
-                  setSelectedDate(date);
-                  window.location.href = `/journal/${format(
-                    date,
-                    "yyyy-MM-dd"
-                  )}`;
-                }
-              }}
-              value={selectedDate}
-              tileClassName="!text-sm !font-medium"
-              className="!border-none w-full"
-            />
+           <JournalCalenderView/>
           </div>
         ) : (
           <div className="space-y-4">
-            {sampleJournals.map((entry) => (
+            {/* {sampleJournals.map((entry) => ( */}
               <Link
-                to={`/journal/${entry.date}`}
-                key={entry.date}
-                className="block bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10 rounded-3xl p-5 shadow-lg backdrop-blur-md hover:ring-2 hover:ring-teal-400 transition-all"
+                to={`/journal/${1}`}
+                className="block bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10 rounded-3xl p-5 shadow-lg backdrop-blur-md transition-all"
               >
-                <div className="flex justify-between items-center mb-2">
-                  <h2 className="text-lg font-semibold text-teal-700 dark:text-teal-300">
-                    {format(new Date(entry.date), "PPP")}
-                  </h2>
-                  <span className="text-xl">{entry.mood}</span>
-                </div>
-                <p className="text-sm text-gray-700 dark:text-gray-300">
-                  {entry.preview}
-                </p>
+                <JournalListView journals={sampleJournals}/>
               </Link>
-            ))}
+            {/* ))} */}
           </div>
         )}
       </div>
