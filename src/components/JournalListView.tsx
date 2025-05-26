@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { format, parseISO } from "date-fns";
 import { JournalEntry } from "../pages/Journal";
+import { useNavigate } from "react-router-dom";
 
 type JournalProps = {
   journals: JournalEntry[];
@@ -8,23 +9,18 @@ type JournalProps = {
 
 const JournalListView = ({ journals }: JournalProps) => {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
-  const [newEntry, setNewEntry] = useState<string>("");
-  const [newDate, setNewDate] = useState<string>(new Date().toISOString().slice(0, 10)); // YYYY-MM-DD
+  const [newDate, setNewDate] = useState<string>(
+    new Date().toISOString().slice(0, 10)
+  ); // YYYY-MM-DD
+  const navigate = useNavigate();
 
   useEffect(() => {
     setEntries(journals);
   }, [journals]);
 
-  const handleAddEntry = () => {
-    if (!newEntry.trim()) return;
-
-    const entry: JournalEntry = {
-      date: newDate,
-      content: newEntry.trim(),
-    };
-
-    setEntries((prev) => [entry, ...prev]);
-    setNewEntry("");
+  const handleAddEntry = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    navigate(`/journal/${Date.now()}`);
   };
 
   return (

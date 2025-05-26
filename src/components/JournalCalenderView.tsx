@@ -1,51 +1,21 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { format } from "date-fns";
-
-type DatePhotoMap = Record<string, string>; // date string (yyyy-MM-dd) -> base64 photo
+import { useNavigate } from "react-router-dom";
 
 const JournalCalenderView = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [datePhotos, setDatePhotos] = useState<DatePhotoMap>({});
+  const navigate = useNavigate();
 
-  // Load photos from localStorage
   useEffect(() => {
-    const photos: DatePhotoMap = {};
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key?.startsWith("photo-")) {
-        const dateKey = key.replace("photo-", "");
-        const photoBase64 = localStorage.getItem(key);
-        if (photoBase64) photos[dateKey] = photoBase64;
-      }
-    }
-    setDatePhotos(photos);
-  }, []);
+    console.log(new Date());
+  });
 
-  // Custom tile content to show background image + overlay + date number
-  const tileContent = ({ date, view }: { date: Date; view: string }) => {
-    if (view !== "month") return null;
-
-    const dateKey = format(date, "yyyy-MM-dd");
-    const photo = datePhotos[dateKey];
-
-    if (!photo) return null;
-
-    return (
-      <>
-        <div
-          className="photo-bg"
-          style={{ backgroundImage: `url(${photo})` }}
-          aria-hidden="true"
-        />
-        <span className="date-number">{date.getDate()}</span>
-      </>
-    );
+  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    navigate(`/journal/${Date.now()}`);
   };
-
-  // Also update tileClassName to remove relative and rounded (handled in CSS)
-  const tileClassName = () => "";
 
   return (
     <div className="max-w-3xl mx-auto p-6">
@@ -59,8 +29,6 @@ const JournalCalenderView = () => {
           <Calendar
             onChange={(date) => setSelectedDate(date as Date)}
             value={selectedDate}
-            tileContent={tileContent}
-            tileClassName={tileClassName}
             className="text-gray-800 dark:text-white"
           />
         </div>
@@ -69,19 +37,17 @@ const JournalCalenderView = () => {
         <div className="w-full md:w-1/2 flex flex-col justify-between">
           <div>
             <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-2">
-              {format(selectedDate || new Date(), "EEEE, MMMM d, yyyy")}
+              {format(selectedDate, "EEEE, MMMM d, yyyy")}
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
               Ready to express how you're feeling today?
             </p>
-            <textarea
-              rows={5}
-              className="w-full p-3 rounded-xl bg-white/50 dark:bg-gray-800/40 border border-white/20 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-emerald-400 dark:focus:ring-emerald-500 resize-none text-sm"
-              placeholder="Write about your day..."
-            />
           </div>
 
-          <button className="mt-4 ml-auto bg-emerald-500 hover:bg-emerald-600 text-white font-medium px-5 py-2 rounded-full transition shadow-md">
+          <button
+            onClick={handleSubmit}
+            className="mt-4 ml-auto bg-emerald-500 hover:bg-emerald-600 text-white font-medium px-5 py-2 rounded-full transition shadow-md"
+          >
             Add Journal
           </button>
         </div>
