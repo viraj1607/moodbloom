@@ -1,14 +1,14 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
-import Home from "./pages/Home";
 import SignIn from "./pages/SignIn";
 import Signup from "./pages/SignUp";
 import Journal from "./pages/Journal";
-import Dashboard from "./pages/Dashboard";
+// import Dashboard from "./pages/Dashboard";
 import Footer from "./components/Footer";
 import JournalEntry from "./pages/JournalEntry";
 import CookiJar from "./pages/CookiJar";
 import PrivateRoute from "./components/PrivateRoute";
+import Home from "./pages/Home";
 
 function App() {
   return (

@@ -1,58 +1,43 @@
-import  { useRef, useState } from "react";
-import geminiAI from "../services/GeminiAPI";
+import { useRef, useState } from "react";
 
-type response = {
-  mood_summary: string;
-  tips: string[];
+type Emotion = {
+  emotion: string;
+  intensity: number;
+};
+
+type MoodResponse = {
+  mood: string;
+  sentiment: number;
+  emotions: Emotion[];
+  insights: string[];
 };
 
 function JournalEntry() {
   const [entry, setEntry] = useState("");
-  const [response, setResponse] = useState<response | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [response, setResponse] = useState<MoodResponse | null>(null);
   const responseRef = useRef<HTMLDivElement | null>(null);
 
-  const handleSave = async () => {
-    setLoading(true);
-    const prompt = `
-        You are a compassionate and insightful mental wellness assistant. A user has written a personal journal entry. Your job is to analyze the emotional tone of the entry and return two things:
+  const staticResponse: MoodResponse = {
+    mood: "anxious",
+    sentiment: -0.4,
+    emotions: [
+      { emotion: "anxiety", intensity: 80 },
+      { emotion: "stress", intensity: 65 },
+      { emotion: "hope", intensity: 30 },
+    ],
+    insights: [
+      "Try writing down what's causing your anxiety to gain clarity.",
+      "Take a few minutes for deep breathing or a short walk.",
+      "Remember that it's okay to feel overwhelmed sometimes.",
+      "Consider setting small, achievable goals for the week.",
+    ],
+  };
 
-        1. A brief summary of the user's **overall mood** in a warm and non-judgmental tone.
-        2. Personalized, empathetic **3 tips or suggestions** to help the user improve their mental well-being, based on what they shared.
-
-        Always speak as if you are talking to a friend — gently supportive and understanding.
-
-        Here is the journal entry:
-
-        ${entry}
-
-        Respond in this JSON format:
-        {
-        "mood_summary": "Short paragraph summarizing the mood",
-        "tips": [
-            "Tip 1...",
-            "Tip 2...",
-            "Tip 3..."
-        ]
-        }
-
-    `;
-    try {
-      const GeminiRes: string | undefined = await geminiAI(prompt);
-      if (!GeminiRes) {
-        console.error("GeminiAI returned undefined");
-        return;
-      }
-      const cleanJSON: string = GeminiRes.replace(/```json|```/g, "").trim();
-      const parsedJSON: response = JSON.parse(cleanJSON);
-      setResponse(parsedJSON);
-      setTimeout(() => {
-        responseRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
-      setLoading(false);
-    } catch (err: any) {
-      console.error(err);
-    }
+  const handleSave = () => {
+    setResponse(staticResponse);
+    setTimeout(() => {
+      responseRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
   };
 
   return (
@@ -77,40 +62,70 @@ function JournalEntry() {
         <div className="flex justify-center">
           <button
             onClick={handleSave}
-            className="px-6 py-2 rounded-xl bg-teal-500 hover:bg-teal-700 text-white font-medium shadow-md transition
-             disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:hover:bg-gray-300"
+            className="px-6 py-2 rounded-xl bg-teal-500 hover:bg-teal-700 text-white font-medium shadow-md transition disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
             disabled={!entry}
           >
-            {!entry
-              ? "Enter something first"
-              : loading
-              ? "Generating..."
-              : "Save Entry"}
+            {!entry ? "Enter something first" : "Analyze Mood"}
           </button>
         </div>
       </div>
+
       {response && (
         <div
           ref={responseRef}
-          className="mt-8 bg-white/60 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-2xl p-6 space-y-4 shadow-lg"
+          className="max-w-3xl mx-auto mt-10 bg-white/60 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-lg space-y-8"
         >
-          <h2 className="text-xl font-semibold text-emerald-600 dark:text-emerald-400">
-            Mood Analysis
-          </h2>
-          <p className="text-slate-700 dark:text-slate-300">
-            {response.mood_summary}
-          </p>
+          {/* Mood & Sentiment */}
+          <div className="text-center space-y-2">
+            <h2 className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">Primary Mood</h2>
+            <p className="text-3xl font-semibold capitalize text-slate-800 dark:text-slate-200">
+              {response.mood}
+            </p>
+            <p
+              className={`text-sm font-medium px-3 py-1 inline-block rounded-full ${
+                response.sentiment > 0.3
+                  ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+                  : response.sentiment < -0.3
+                  ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
+                  : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
+              }`}
+            >
+              Sentiment Score: {response.sentiment.toFixed(2)}
+            </p>
+          </div>
 
-          <h3 className="text-lg font-medium text-cyan-600 dark:text-cyan-400">
-            Tips for You
-          </h3>
-          <ul className="list-disc pl-5 text-slate-700 dark:text-slate-300 space-y-1">
-            {response.tips.map((tip, index) => (
-              <li className="my-4" key={index}>
-                {tip}
-              </li>
-            ))}
-          </ul>
+          {/* Emotions */}
+          <div>
+            <h3 className="text-lg font-semibold text-cyan-600 dark:text-cyan-400 mb-4">Emotional Breakdown</h3>
+            <div className="space-y-4">
+              {response.emotions.map((e, i) => (
+                <div key={i}>
+                  <div className="flex justify-between text-sm mb-1 text-slate-700 dark:text-slate-300">
+                    <span className="capitalize">{e.emotion}</span>
+                    <span>{e.intensity}%</span>
+                  </div>
+                  <div className="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-cyan-400 to-blue-500 dark:from-cyan-300 dark:to-blue-400"
+                      style={{ width: `${e.intensity}%` }}
+                    ></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Insights */}
+          <div>
+            <h3 className="text-lg font-semibold text-indigo-600 dark:text-indigo-400 mb-4">Suggestions & Reflections</h3>
+            <ul className="list-disc pl-6 space-y-3 text-slate-700 dark:text-slate-200">
+              {response.insights.map((tip, index) => (
+                <li key={index} className="leading-relaxed">
+                  {tip}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       )}
     </div>
